@@ -34,7 +34,7 @@ MODEL = None
 def load_model():
     global MODEL
     try:
-        MODEL = YOLO(r"yolo_violence\exp19\weights\best.pt")
+        MODEL = YOLO('yolov8m.pt')  # Use pre-trained model
         print("Model loaded successfully!")
         return True
     except Exception as e:
