@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Violence Detection - User Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-gradient-blue {
+            background: linear-gradient(135deg, #0078d4 0%, #00b4ff 100%);
+        }
+        
+        .card-gradient-green {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        }
+        
+        .card-gradient-purple {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        }
+        
+        .card-gradient-orange {
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#0f1a23] to-[#1A1A2E] font-display text-white">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <div class="w-64 glass-morphism border-r border-gray-700/50 p-6 flex flex-col">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2 bg-cyan-500 rounded-lg">
+                    <span class="material-symbols-outlined text-white">security</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">VDS</h1>
+                    <p class="text-xs text-gray-400">Violence Detection</p>
+                </div>
+            </div>
+            
+            <nav class="flex-1 space-y-2">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm font-semibold">Dashboard</span>
+                </a>
+                <a href="/video_upload" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span class="text-sm">Upload Video</span>
+                </a>
+                <a href="/live_cctv" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">videocam</span>
+                    <span class="text-sm">Live CCTV</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">assessment</span>
+                    <span class="text-sm">Reports</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">help</span>
+                    <span class="text-sm">Help</span>
+                </a>
+            </nav>
+            
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-semibold">Logout</span>
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Bar -->
+            <div class="glass-morphism border-b border-gray-700/50 p-6 flex items-center justify-between sticky top-0 z-20">
+                <div>
+                    <h2 class="text-2xl font-bold">Dashboard</h2>
+                    <p class="text-sm text-gray-400">Welcome back! Here's your detection overview</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-3 rounded-lg hover:bg-gray-700/30 transition-all relative">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                    </button>
+                    <button class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-700/30 transition-all">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="text-sm">Profile</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="stat-card card-gradient-blue p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-blue-100 opacity-90">Total Videos</p>
+                                <p class="text-3xl font-bold mt-2">24</p>
+                                <p class="text-xs text-blue-100 opacity-75 mt-2">↑ 12% from last week</p>
+                            </div>
+                            <span class="material-symbols-outlined text-5xl opacity-20">video_library</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card card-gradient-green p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-green-100 opacity-90">Violence Detected</p>
+                                <p class="text-3xl font-bold mt-2">12</p>
+                                <p class="text-xs text-green-100 opacity-75 mt-2">↑ 8% from last week</p>
+                            </div>
+                            <span class="material-symbols-outlined text-5xl opacity-20">warning</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card card-gradient-purple p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-purple-100 opacity-90">Accuracy Rate</p>
+                                <p class="text-3xl font-bold mt-2">93.5%</p>
+                                <p class="text-xs text-purple-100 opacity-75 mt-2">↑ 2.3% improvement</p>
+                            </div>
+                            <span class="material-symbols-outlined text-5xl opacity-20">check_circle</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card card-gradient-orange p-6 rounded-xl text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-orange-100 opacity-90">Avg Response</p>
+                                <p class="text-3xl font-bold mt-2">2.4ms</p>
+                                <p class="text-xs text-orange-100 opacity-75 mt-2">Real-time detection</p>
+                            </div>
+                            <span class="material-symbols-outlined text-5xl opacity-20">bolt</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Cards -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Upload Video Card -->
+                    <div class="glass-morphism p-8 rounded-2xl border border-cyan-500/20">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-3 bg-cyan-500/20 rounded-lg">
+                                <span class="material-symbols-outlined text-cyan-400 text-2xl">upload_file</span>
+                            </div>
+                            <h3 class="text-xl font-bold">Upload Video</h3>
+                        </div>
+                        
+                        <div class="border-2 border-dashed border-cyan-500/50 rounded-xl p-8 text-center hover:border-cyan-400 transition-colors cursor-pointer group">
+                            <span class="material-symbols-outlined text-5xl text-cyan-400 opacity-50 group-hover:opacity-100 transition-opacity">cloud_upload</span>
+                            <p class="text-gray-300 mt-4 font-semibold">Drag and drop your video here</p>
+                            <p class="text-gray-500 text-sm mt-2">or click to browse (MP4, AVI, MOV)</p>
+                        </div>
+                        
+                        <a href="/video_upload" class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-lg transition-all font-semibold">
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                            Go to Upload
+                        </a>
+                    </div>
+                    
+                    <!-- Live CCTV Card -->
+                    <div class="glass-morphism p-8 rounded-2xl border border-green-500/20">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-3 bg-green-500/20 rounded-lg">
+                                <span class="material-symbols-outlined text-green-400 text-2xl">videocam</span>
+                            </div>
+                            <h3 class="text-xl font-bold">Live CCTV Stream</h3>
+                        </div>
+                        
+                        <div class="bg-black/30 rounded-xl p-8 text-center border border-green-500/30 aspect-video flex items-center justify-center">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-5xl text-green-400 opacity-50">videocam_off</span>
+                                <p class="text-gray-400 mt-4">No CCTV connected</p>
+                                <p class="text-gray-500 text-sm mt-2">Connect your RTSP camera to start monitoring</p>
+                            </div>
+                        </div>
+                        
+                        <a href="/live_cctv" class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg transition-all font-semibold">
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                            Connect CCTV
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Model Selection & Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1">
+                        <div class="glass-morphism p-6 rounded-2xl border border-purple-500/20">
+                            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-purple-400">smart_toy</span>
+                                AI Model
+                            </h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-purple-500/10 cursor-pointer group">
+                                    <input type="radio" name="model" value="yolov8" checked class="w-4 h-4 accent-purple-500">
+                                    <div>
+                                        <p class="text-sm font-semibold group-hover:text-purple-300">YOLOv8</p>
+                                        <p class="text-xs text-gray-500">Fastest & Most Accurate</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-500/10 cursor-pointer group">
+                                    <input type="radio" name="model" value="mobilenet" class="w-4 h-4 accent-blue-500">
+                                    <div>
+                                        <p class="text-sm font-semibold group-hover:text-blue-300">MobileNetV3</p>
+                                        <p class="text-xs text-gray-500">Lightweight & Fast</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-cyan-500/10 cursor-pointer group">
+                                    <input type="radio" name="model" value="vit" class="w-4 h-4 accent-cyan-500">
+                                    <div>
+                                        <p class="text-sm font-semibold group-hover:text-cyan-300">Vision Transformer</p>
+                                        <p class="text-xs text-gray-500">High Accuracy Mode</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-2">
+                        <div class="glass-morphism p-6 rounded-2xl border border-orange-500/20">
+                            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-orange-400">history</span>
+                                Recent Detections
+                            </h3>
+                            
+                            <div class="space-y-3 max-h-64 overflow-y-auto">
+                                <div class="flex items-center justify-between p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                                    <div>
+                                        <p class="text-sm font-semibold">Classroom_A_2025-11-14.mp4</p>
+                                        <p class="text-xs text-gray-400">Detected at 02:45 UTC</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-block px-2 py-1 bg-red-500/30 text-red-300 text-xs font-semibold rounded">8 Events</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                                    <div>
+                                        <p class="text-sm font-semibold">Parking_Lot_2025-11-13.mp4</p>
+                                        <p class="text-xs text-gray-400">Detected at 14:20 UTC</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-block px-2 py-1 bg-yellow-500/30 text-yellow-300 text-xs font-semibold rounded">3 Events</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                                    <div>
+                                        <p class="text-sm font-semibold">Reception_2025-11-12.mp4</p>
+                                        <p class="text-xs text-gray-400">Detected at 09:15 UTC</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-block px-2 py-1 bg-green-500/30 text-green-300 text-xs font-semibold rounded">0 Events</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html>

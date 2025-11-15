@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Upload & Analyze Videos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #ff4444;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(255, 68, 68, 0.5);
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert-icon {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#0f1a23] to-[#1A1A2E] font-display text-white">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <div class="w-64 glass-morphism border-r border-gray-700/50 p-6 flex flex-col">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2 bg-cyan-500 rounded-lg">
+                    <span class="material-symbols-outlined text-white">security</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">VDS</h1>
+                    <p class="text-xs text-gray-400">Violence Detection</p>
+                </div>
+            </div>
+            
+            <nav class="flex-1 space-y-2">
+                <a href="/user_dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm">Dashboard</span>
+                </a>
+                <a href="/video_upload" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-cyan-500 text-white font-bold">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span class="text-sm">Upload</span>
+                </a>
+            </nav>
+            
+            <button onclick="logout()" class="w-full px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30">
+                <span class="material-symbols-outlined">logout</span>
+                Logout
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <div class="p-6 border-b border-gray-700/50">
+                <h2 class="text-2xl font-bold">Upload Video</h2>
+                <p class="text-sm text-gray-400">Select a video and click upload</p>
+            </div>
+            
+            <div class="flex-1 overflow-auto p-6">
+                <!-- Upload Form -->
+                <div class="glass-morphism p-8 rounded-2xl border border-cyan-500/20 max-w-2xl">
+                    <h3 class="text-xl font-bold mb-6">Select Video</h3>
+                    
+                    <input type="file" id="videoFile" accept="video/*" class="hidden" onchange="onFileSelected()">
+                    
+                    <button onclick="document.getElementById('videoFile').click()" 
+                            class="w-full p-8 border-2 border-dashed border-cyan-500 rounded-xl text-center hover:border-cyan-400 transition-all">
+                        <span class="material-symbols-outlined text-6xl text-cyan-400">cloud_upload</span>
+                        <p class="text-gray-300 mt-4 font-semibold">Click to select video</p>
+                        <p class="text-gray-500 text-sm mt-2">MP4, AVI, MOV (any size)</p>
+                    </button>
+                    
+                    <!-- File Info -->
+                    <div id="fileInfo" class="hidden mt-4 p-4 bg-cyan-500/10 rounded-lg border border-cyan-500/30">
+                        <p class="text-sm text-gray-300">Selected: <span id="fileName" class="font-bold text-cyan-400"></span></p>
+                        <p class="text-xs text-gray-500 mt-1">Size: <span id="fileSize"></span></p>
+                    </div>
+                    
+                    <!-- Upload Button -->
+                    <button id="uploadBtn" onclick="uploadFile()" disabled 
+                            class="w-full mt-6 px-6 py-3 rounded-lg bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-cyan-600 font-bold flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">upload</span>
+                        Upload & Process
+                    </button>
+                    
+                    <!-- Progress -->
+                    <div id="progress" class="hidden mt-4">
+                        <p class="text-sm text-gray-300 mb-2">Processing: <span id="progressPercent">0</span>%</p>
+                        <div class="w-full bg-gray-700 rounded-full h-3">
+                            <div id="progressBar" class="bg-cyan-500 h-3 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Summary -->
+                <div id="results" class="hidden mt-8 glass-morphism p-8 rounded-2xl border border-green-500/20">
+                    <h3 class="text-2xl font-bold mb-6 text-green-400">✓ Analysis Complete!</h3>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                            <p class="text-xs text-gray-400 mb-2">Total Events</p>
+                            <p class="text-2xl font-bold text-purple-400" id="totalEvents">0</p>
+                        </div>
+                        <div class="p-4 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                            <p class="text-xs text-gray-400 mb-2">Best Confidence</p>
+                            <p class="text-2xl font-bold text-blue-400" id="bestConf">0%</p>
+                        </div>
+                        <div class="p-4 bg-orange-500/10 rounded-lg border border-orange-500/30">
+                            <p class="text-xs text-gray-400 mb-2">Time</p>
+                            <p class="text-2xl font-bold text-orange-400" id="timeDetected">00:00</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="resetForm()" class="w-full px-6 py-2 rounded-lg bg-gray-700/50 hover:bg-gray-700 font-bold">
+                        Upload Another Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIOLENCE DETECTED POPUP MODAL -->
+    <div id="violenceModal" class="modal">
+        <div class="modal-content">
+            <!-- Alert Header -->
+            <div class="text-center mb-6">
+                <span class="material-symbols-outlined text-6xl text-red-500 alert-icon display-block">priority_high</span>
+                <h2 class="text-3xl font-bold text-red-500 mt-4">⚠️ VIOLENCE DETECTED</h2>
+                <p class="text-xl text-orange-400 mt-2" id="confidenceDisplay">Confidence: --</p>
+                <p class="text-lg text-cyan-400 mt-1" id="timeDisplay">Timestamp: --:--</p>
+            </div>
+            
+            <!-- Best Frame Image -->
+            <div class="mb-6">
+                <img id="bestFrameImage" src="" alt="Best Violence Frame" class="w-full rounded-lg border-2 border-red-500">
+            </div>
+            
+            <!-- Alert Details -->
+            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+                <p class="text-sm text-gray-300">
+                    <span class="text-red-400 font-bold">🚨 Alert:</span> 
+                    Violence detected in the uploaded video. The best detection frame is shown above.
+                </p>
+            </div>
+            
+            <!-- Close Button -->
+            <button onclick="closeViolenceModal()" 
+                    class="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 font-bold text-lg">
+                Close & View Report
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function onFileSelected() {
+            const file = document.getElementById('videoFile').files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                document.getElementById('fileInfo').classList.remove('hidden');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+        
+        async function uploadFile() {
+            const file = document.getElementById('videoFile').files[0];
+            if (!file) return;
+            
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('progress').classList.remove('hidden');
+            
+            try {
+                // STEP 1: Upload file
+                document.getElementById('progressPercent').textContent = '10';
+                document.getElementById('progressBar').style.width = '10%';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('threshold', '0.5');
+                
+                const uploadRes = await fetch('/api/upload-video', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadData = await uploadRes.json();
+                if (!uploadData.success) throw new Error('Upload failed: ' + uploadData.error);
+                
+                document.getElementById('progressPercent').textContent = '40';
+                document.getElementById('progressBar').style.width = '40%';
+                
+                // STEP 2: Detect violence
+                document.getElementById('progressPercent').textContent = '50';
+                document.getElementById('progressBar').style.width = '50%';
+                
+                const detectRes = await fetch('/api/detect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        filepath: uploadData.filepath,
+                        model: 'yolov8',
+                        threshold: 0.5
+                    })
+                });
+                
+                const detectData = await detectRes.json();
+                if (!detectData.success) throw new Error('Detection failed: ' + detectData.error);
+                
+                document.getElementById('progressPercent').textContent = '100';
+                document.getElementById('progressBar').style.width = '100%';
+                
+                // Show results
+                displayResults(detectData.results);
+                
+                setTimeout(() => {
+                    document.getElementById('progress').classList.add('hidden');
+                    document.getElementById('results').classList.remove('hidden');
+                    
+                    // SHOW POPUP IF VIOLENCE DETECTED
+                    if (detectData.results.violence_count > 0 && detectData.results.best_frame) {
+                        showViolenceModal(detectData.results);
+                    }
+                }, 500);
+                
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+                console.error(error);
+                document.getElementById('progress').classList.add('hidden');
+            }
+            
+            document.getElementById('uploadBtn').disabled = false;
+        }
+        
+        function displayResults(data) {
+            document.getElementById('totalEvents').textContent = data.violence_count;
+            document.getElementById('bestConf').textContent = (data.best_confidence * 100).toFixed(1) + '%';
+            document.getElementById('timeDetected').textContent = data.best_timestamp;
+        }
+        
+        function showViolenceModal(data) {
+            document.getElementById('bestFrameImage').src = '/' + data.best_frame;
+            document.getElementById('confidenceDisplay').textContent = 'Confidence: ' + (data.best_confidence * 100).toFixed(1) + '%';
+            document.getElementById('timeDisplay').textContent = 'Timestamp: ' + data.best_timestamp;
+            document.getElementById('violenceModal').classList.add('show');
+        }
+        
+        function closeViolenceModal() {
+            document.getElementById('violenceModal').classList.remove('show');
+        }
+        
+        function resetForm() {
+            document.getElementById('videoFile').value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('uploadBtn').disabled = true;
+            closeViolenceModal();
+        }
+        
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

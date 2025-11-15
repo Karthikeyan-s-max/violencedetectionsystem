@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Violence Detection System - Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #00CCFF 0%, #FF4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#0f1a23] to-[#1A1A2E] font-display text-white min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md">
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <div class="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg">
+                    <span class="material-symbols-outlined text-white text-4xl">security</span>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold gradient-text mb-2">VDS</h1>
+            <p class="text-gray-400">Violence Detection System</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="glass-morphism p-8 rounded-2xl border border-cyan-500/20">
+            <h2 class="text-2xl font-bold mb-6 text-center">Login to Dashboard</h2>
+            
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+            
+            <!-- Standard Login Form -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2 text-gray-300">Email or Username</label>
+                <input type="text" id="username" placeholder="user1 or email@example.com" 
+                       class="w-full px-4 py-3 rounded-lg bg-gray-700/30 border border-gray-600 focus:border-cyan-500 focus:outline-none text-white placeholder-gray-500">
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2 text-gray-300">Password</label>
+                <input type="password" id="password" placeholder="Enter password" 
+                       class="w-full px-4 py-3 rounded-lg bg-gray-700/30 border border-gray-600 focus:border-cyan-500 focus:outline-none text-white placeholder-gray-500">
+            </div>
+            
+            <button onclick="login()" class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 font-bold text-lg mb-4 transition-all">
+                Login
+            </button>
+            
+            <!-- Divider -->
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex-1 h-px bg-gray-600"></div>
+                <span class="text-gray-400 text-sm">OR</span>
+                <div class="flex-1 h-px bg-gray-600"></div>
+            </div>
+            
+            <!-- Google Login Button -->
+            <div id="g_id_onload"
+                 data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                 data-callback="handleGoogleLogin"
+                 class="w-full mb-4">
+            </div>
+            <div id="g_id_signin" data-type="standard" data-size="large" data-theme="dark" class="w-full mb-4"></div>
+            
+            <!-- Fallback Google Button (if GSI fails) -->
+            <button onclick="showGoogleLoginInfo()" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 font-bold text-lg transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">mail</span>
+                Sign in with Google
+            </button>
+            
+            <!-- Demo Credentials -->
+            <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <p class="text-xs text-gray-400 mb-2 font-semibold">Demo Credentials:</p>
+                <p class="text-xs text-blue-300 mb-1">Username: <span class="font-mono">user1</span></p>
+                <p class="text-xs text-blue-300">Password: <span class="font-mono">password123</span></p>
+            </div>
+        </div>
+        
+        <!-- Info Section -->
+        <div class="mt-6 text-center text-gray-400 text-sm">
+            <p>🔒 Secure login with encryption</p>
+            <p class="mt-2">Google Sign-in coming soon!</p>
+        </div>
+    </div>
+
+    <!-- Google Login Info Modal -->
+    <div id="googleInfoModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div class="glass-morphism p-8 rounded-2xl border border-cyan-500/20 max-w-md">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">Google Sign-in Setup</h3>
+            <p class="text-gray-300 mb-4">To enable Gmail login:</p>
+            <ol class="text-sm text-gray-400 space-y-2 mb-6 list-decimal list-inside">
+                <li>Go to <span class="text-cyan-400">https://console.cloud.google.com</span></li>
+                <li>Create new project "Violence Detection"</li>
+                <li>Enable Google+ API</li>
+                <li>Create OAuth 2.0 credentials</li>
+                <li>Copy Client ID</li>
+                <li>Replace "YOUR_GOOGLE_CLIENT_ID" in login.html</li>
+            </ol>
+            <button onclick="closeGoogleInfo()" class="w-full px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-600 font-bold">
+                Understood
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+        }
+        
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showError('Please enter username and password');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        role: 'user'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Login successful!');
+                    window.location.href = '/user_dashboard';
+                } else {
+                    showError(data.error || 'Login failed');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+        
+        // Google Sign-in Callback
+        function handleGoogleLogin(response) {
+            console.log('Google login response:', response);
+            
+            // Decode JWT token
+            const base64Url = response.credential.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            const userInfo = JSON.parse(jsonPayload);
+            console.log('User Info:', userInfo);
+            
+            // Extract name from email
+            const email = userInfo.email;
+            const name = userInfo.name || email.split('@')[0];
+            
+            // Send to backend
+            loginWithGoogle(email, name);
+        }
+        
+        async function loginWithGoogle(email, name) {
+            try {
+                const response = await fetch('/api/login-google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name,
+                        role: 'user'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Google login successful!');
+                    window.location.href = '/user_dashboard';
+                } else {
+                    showError(data.error || 'Google login failed');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+        
+        function showGoogleLoginInfo() {
+            document.getElementById('googleInfoModal').classList.remove('hidden');
+        }
+        
+        function closeGoogleInfo() {
+            document.getElementById('googleInfoModal').classList.add('hidden');
+        }
+        
+        // Allow Enter key to login
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>

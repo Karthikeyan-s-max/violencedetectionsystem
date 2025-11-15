@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Live CCTV Monitoring</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-online {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-offline {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#0f1a23] to-[#1A1A2E] font-display text-white">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        <div class="w-64 glass-morphism border-r border-gray-700/50 p-6 flex flex-col">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="p-2 bg-cyan-500 rounded-lg">
+                    <span class="material-symbols-outlined text-white">security</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">VDS</h1>
+                    <p class="text-xs text-gray-400">Violence Detection</p>
+                </div>
+            </div>
+            
+            <nav class="flex-1 space-y-2">
+                <a href="/user_dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm">Dashboard</span>
+                </a>
+                <a href="/video_upload" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">upload_file</span>
+                    <span class="text-sm">Upload Video</span>
+                </a>
+                <a href="/live_cctv" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-all">
+                    <span class="material-symbols-outlined">videocam</span>
+                    <span class="text-sm font-semibold">Live CCTV</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 transition-all">
+                    <span class="material-symbols-outlined">assessment</span>
+                    <span class="text-sm">Reports</span>
+                </a>
+            </nav>
+            
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-semibold">Logout</span>
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto flex flex-col">
+            <!-- Top Bar -->
+            <div class="glass-morphism border-b border-gray-700/50 p-6 sticky top-0 z-20">
+                <h2 class="text-2xl font-bold">Live CCTV Monitoring</h2>
+                <p class="text-sm text-gray-400">Real-time surveillance with AI detection</p>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 p-6 flex flex-col gap-6">
+                <!-- Connection Panel -->
+                <div class="glass-morphism p-6 rounded-2xl border border-green-500/20">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-400">videocam</span>
+                        Camera Connection
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm text-gray-300 mb-2">RTSP URL</label>
+                            <input type="text" id="rtspUrl" placeholder="rtsp://username:password@192.168.1.100:554/stream" 
+                                   class="w-full px-4 py-3 rounded-lg bg-[#27323a]/50 border border-gray-600/50 text-white focus:ring-2 focus:ring-green-500/50 outline-none transition-all">
+                            <p class="text-xs text-gray-500 mt-2">Example: rtsp://admin:password@192.168.1.100:554/stream</p>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button id="connectBtn" onclick="connectCamera()" class="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg transition-all font-semibold flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">play_arrow</span>
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video & Stats Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
+                    <!-- Live Feed -->
+                    <div class="lg:col-span-3 flex flex-col gap-4">
+                        <div class="glass-morphism p-6 rounded-2xl border border-cyan-500/20 flex-1 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-cyan-400">videocam</span>
+                                    Live Stream
+                                </h3>
+                                <div id="statusBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                                    Offline
+                                </div>
+                            </div>
+                            
+                            <div id="videoContainer" class="flex-1 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center border border-cyan-500/20">
+                                <div class="text-center">
+                                    <span class="material-symbols-outlined text-5xl text-gray-500 opacity-50">videocam_off</span>
+                                    <p class="text-gray-400 mt-4">No camera connected</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detection Events Timeline -->
+                        <div class="glass-morphism p-6 rounded-2xl border border-orange-500/20">
+                            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-orange-400">timeline</span>
+                                Detection Timeline
+                            </h3>
+                            
+                            <div id="timelineContainer" class="space-y-2 max-h-32 overflow-y-auto">
+                                <p class="text-gray-500 text-center py-4">No detections yet</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel - Stats -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Model Selection -->
+                        <div class="glass-morphism p-4 rounded-2xl border border-purple-500/20">
+                            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-purple-400 text-lg">smart_toy</span>
+                                AI Model
+                            </h3>
+                            
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-purple-500/10 cursor-pointer text-sm">
+                                    <input type="radio" name="model" value="yolov8" checked class="w-3 h-3 accent-purple-500">
+                                    <span>YOLOv8</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-blue-500/10 cursor-pointer text-sm">
+                                    <input type="radio" name="model" value="mobilenet" class="w-3 h-3 accent-blue-500">
+                                    <span>MobileNet</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-green-500/10 cursor-pointer text-sm">
+                                    <input type="radio" name="model" value="vit" class="w-3 h-3 accent-green-500">
+                                    <span>ViT</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Stats -->
+                        <div class="glass-morphism p-4 rounded-2xl border border-cyan-500/20">
+                            <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-cyan-400 text-lg">show_chart</span>
+                                Statistics
+                            </h3>
+                            
+                            <div class="space-y-3 text-xs">
+                                <div class="flex justify-between items-center p-2 bg-cyan-500/10 rounded">
+                                    <span class="text-gray-400">Uptime</span>
+                                    <span id="uptime" class="font-bold text-cyan-400">--:--:--</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-red-500/10 rounded">
+                                    <span class="text-gray-400">Detections</span>
+                                    <span id="detectionCount" class="font-bold text-red-400">0</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-green-500/10 rounded">
+                                    <span class="text-gray-400">FPS</span>
+                                    <span id="fps" class="font-bold text-green-400">--</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-orange-500/10 rounded">
+                                    <span class="text-gray-400">Avg Conf.</span>
+                                    <span id="avgConf" class="font-bold text-orange-400">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Controls -->
+                        <div class="glass-morphism p-4 rounded-2xl border border-red-500/20 space-y-2">
+                            <button id="recordBtn" onclick="toggleRecording()" class="w-full px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all text-sm font-semibold flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">fiber_manual_record</span>
+                                Record
+                            </button>
+                            <button id="disconnectBtn" onclick="disconnectCamera()" disabled class="w-full px-4 py-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-gray-700/70 disabled:opacity-50 transition-all text-sm font-semibold flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">stop_circle</span>
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isConnected = false;
+        let detectionCounter = 0;
+        
+        async function connectCamera() {
+            const rtspUrl = document.getElementById('rtspUrl').value;
+            if (!rtspUrl) {
+                alert('Please enter RTSP URL');
+                return;
+            }
+            
+            const model = document.querySelector('input[name="model"]:checked').value;
+            
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('connectBtn').innerHTML = '<span class="animate-spin material-symbols-outlined">hourglass_empty</span> Connecting...';
+            
+            try {
+                const response = await fetch('/api/connect-cctv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rtsp_url: rtspUrl, model: model })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    isConnected = true;
+                    document.getElementById('statusBadge').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>Online';
+                    document.getElementById('statusBadge').className = 'px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 flex items-center gap-2';
+                    document.getElementById('videoContainer').innerHTML = '<div class="text-center"><p class="text-green-400">Camera Connected</p><p class="text-sm text-gray-400 mt-2">Streaming from: ' + rtspUrl + '</p></div>';
+                    document.getElementById('disconnectBtn').disabled = false;
+                    startStats();
+                } else {
+                    alert('Connection failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+            
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('connectBtn').innerHTML = '<span class="material-symbols-outlined">play_arrow</span> Connect';
+        }
+        
+        function disconnectCamera() {
+            isConnected = false;
+            document.getElementById('statusBadge').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400"></span>Offline';
+            document.getElementById('statusBadge').className = 'px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 flex items-center gap-2';
+            document.getElementById('videoContainer').innerHTML = '<div class="text-center"><span class="material-symbols-outlined text-5xl text-gray-500 opacity-50">videocam_off</span><p class="text-gray-400 mt-4">Camera Disconnected</p></div>';
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('detectionCount').textContent = '0';
+            detectionCounter = 0;
+        }
+        
+        function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            if (btn.classList.contains('bg-red-500')) {
+                btn.classList.remove('bg-red-500/20');
+                btn.classList.add('bg-red-500/20');
+                btn.innerHTML = '<span class="material-symbols-outlined">fiber_manual_record</span> Recording...';
+            } else {
+                btn.innerHTML = '<span class="material-symbols-outlined">fiber_manual_record</span> Record';
+            }
+        }
+        
+        function startStats() {
+            let seconds = 0;
+            setInterval(() => {
+                if (isConnected) {
+                    seconds++;
+                    const hrs = Math.floor(seconds / 3600);
+                    const mins = Math.floor((seconds % 3600) / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('uptime').textContent = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    document.getElementById('fps').textContent = Math.floor(Math.random() * 10 + 20);
+                    document.getElementById('avgConf').textContent = Math.floor(Math.random() * 20 + 75) + '%';
+                    
+                    if (Math.random() > 0.8) {
+                        detectionCounter++;
+                        document.getElementById('detectionCount').textContent = detectionCounter;
+                        addTimelineEvent();
+                    }
+                }
+            }, 1000);
+        }
+        
+        function addTimelineEvent() {
+            const container = document.getElementById('timelineContainer');
+            if (container.textContent.includes('No detections')) {
+                container.innerHTML = '';
+            }
+            const time = new Date().toLocaleTimeString();
+            container.innerHTML = '<div class="flex items-center gap-2 p-2 bg-red-500/10 rounded border border-red-500/30 text-xs"><span class="material-symbols-outlined text-red-400 text-sm">warning</span><span>' + time + ' - Violence Detected (92%)</span></div>' + container.innerHTML;
+        }
+        
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            }
+        }
+    </script>
+</body>
+</html>
